@@ -1,0 +1,6 @@
+(int (x 1234))
+(int (x -1234))
+(int (x #o755))
+(int (x #o-755))
+(int (x #xface))
+(int (x #x-face))
