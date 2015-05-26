@@ -1,0 +1,6 @@
+(char ((* s) "Hello, world!"))
+(char ((* s) "'single-quoted'"))
+(char ((* s) "\"double-quoted\""))
+(char ((* s) "\a\b\t\n\v\f\r"))
+(char ((* s) "\x07\x08\x09\x0a\x0b\x0c\x0d"))
+(char ((* s) "\x01\x20\x1f"))

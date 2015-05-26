@@ -2,7 +2,8 @@
 
 (use-modules (ice-9 match)
              (ice-9 format)
-             (ice-9 rdelim))
+             (ice-9 rdelim)
+             (ice-9 regex))
 
 (define-syntax sf
   (syntax-rules ()
@@ -32,8 +33,15 @@
 
 ;;; A.1.3 Identifiers
 
+(define c-identifier-regexp (make-regexp "^[a-zA-Z_][a-zA-Z_0-9]*$"))
+
+(define (c-identifier? x)
+  (and (symbol? x)
+       (let ((s (symbol->string x)))
+         (regexp-exec c-identifier-regexp s))))
+
 (dmf identifier
-     ((? symbol? identifier)
+     ((? c-identifier? identifier)
       (symbol->string identifier)))
 
 ;;; A.1.5 Constants
@@ -51,8 +59,8 @@
       (format-identifier x)))
 
 (dmf character-constant
-     (('char-const (and (? string-literal? string-literal)
-                        (not (? string-null? string-literal))))
+     (('$char (and (? string-literal? string-literal)
+                   (not (? string-null? string-literal))))
       (let ((c (char->integer (string-ref string-literal 0))))
         (sf "'~a'"
             (cond
@@ -102,14 +110,11 @@
       (format-primary-expression e))
      (('@ (? postfix-expression? array)
           (? expression? index))
-     (sf "~a[~a]"
-         (format-postfix-expression array)
-         (format-expression index)))
-     (('call (? postfix-expression? callable))
-      (sf "~a()"
-          (format-postfix-expression callable)))
-     (('call (? postfix-expression? callable)
-             (? assignment-expression? assignment-expressions) ...)
+      (sf "~a[~a]"
+          (format-postfix-expression array)
+          (format-expression index)))
+     (('$call (? postfix-expression? callable)
+              (? assignment-expression? assignment-expressions) ...)
       (sf "~a(~a)"
           (format-postfix-expression callable)
           (string-join (map format-assignment-expression
@@ -125,7 +130,7 @@
       (sf "~a->~a"
           (format-postfix-expression pointer)
           (format-identifier element)))
-     (((? postfix-expression postfix-expression)
+     (((? postfix-expression? postfix-expression)
        (and op (or '++ '--)))
       (sf "~a~a"
           (format-postfix-expression postfix-expression)
@@ -144,9 +149,9 @@
       (sf "~a~a"
           (symbol->string op)
           (format-unary-expression unary-expression)))
-     (('sizeof-type (? type-name? type-name))
+     (('$sizeof:type (? type-name? type-name))
       (sf "sizeof(~a)" (format-type-name type-name)))
-     (('sizeof-expr (? unary-expression? unary-expression))
+     (('$sizeof:expr (? unary-expression? unary-expression))
       (sf "sizeof ~a" (format-unary-expression unary-expression))))
 
 (define unary-operators '(& * + - ~ !))
@@ -160,9 +165,9 @@
 (dmf cast-expression
      ((? unary-expression? e)
       (format-unary-expression e))
-     (('cast (? type-name? type-name)
-             (? cast-expression? cast-expression))
-      (sf "(~a) ~a"
+     (('$cast (? type-name? type-name)
+              (? cast-expression? cast-expression))
+      (sf "(~a)~a"
           (format-type-name type-name)
           (format-cast-expression cast-expression))))
 
@@ -172,7 +177,7 @@
      (((and op (or '* '/ '%))
        (? multiplicative-expression? left)
        (? cast-expression? right))
-      (sf "(~a ~a ~a)"
+      (sf "(~a~a~a)"
           (format-multiplicative-expression left)
           (symbol->string op)
           (format-cast-expression right))))
@@ -183,7 +188,7 @@
      (((and op (or '+ '-))
        (? additive-expression? left)
        (? multiplicative-expression? right))
-      (sf "(~a ~a ~a)"
+      (sf "(~a~a~a)"
           (format-additive-expression left)
           (symbol->string op)
           (format-multiplicative-expression right))))
@@ -194,7 +199,7 @@
      (((and op (or '<< '>>))
        (? shift-expression? left)
        (? additive-expression? right))
-      (sf "(~a ~a ~a)"
+      (sf "(~a~a~a)"
           (format-shift-expression left)
           (symbol->string op)
           (format-additive-expression right))))
@@ -205,7 +210,7 @@
      (((and op (or '< '> '<= '>=))
        (? relational-expression? left)
        (? shift-expression? right))
-      (sf "(~a ~a ~a)"
+      (sf "(~a~a~a)"
           (format-relational-expression left)
           (symbol->string op)
           (format-shift-expression right))))
@@ -216,7 +221,7 @@
      (((and op (or '== '!=))
        (? equality-expression? left)
        (? relational-expression? right))
-      (sf "(~a ~a ~a)"
+      (sf "(~a~a~a)"
           (format-equality-expression left)
           (symbol->string op)
           (format-relational-expression right))))
@@ -227,7 +232,7 @@
      (('&
        (? and-expression? left)
        (? equality-expression? right))
-      (sf "(~a & ~a)"
+      (sf "(~a&~a)"
           (format-and-expression left)
           (format-equality-expression right))))
 
@@ -237,7 +242,7 @@
      (('^
        (? exclusive-or-expression? left)
        (? and-expression? right))
-      (sf "(~a ^ ~a)"
+      (sf "(~a^~a)"
           (format-exclusive-or-expression left)
           (format-and-expression right))))
 
@@ -245,10 +250,10 @@
      ((? exclusive-or-expression? e)
       (format-exclusive-or-expression e))
      (((and (? symbol? op)
-            (? (lambda (op) (= (symbol->string op) "|")) op))
+            (? (lambda (op) (eq? (symbol->string op) "|")) op))
        (? inclusive-or-expression? left)
        (? exclusive-or-expression? right))
-      (sf "(~a | ~a)"
+      (sf "(~a|~a)"
           (format-inclusive-or-expression left)
           (format-exclusive-or-expression right))))
 
@@ -266,7 +271,7 @@
      ((? logical-and-expression? e)
       (format-logical-and-expression e))
      (((and (? symbol? op)
-            (? (lambda (op) (= (symbol->string op) "||")) op))
+            (? (lambda (op) (eq? (symbol->string op) "||")) op))
        (? logical-or-expression? left)
        (? logical-and-expression? right))
       (sf "(~a || ~a)"
@@ -298,7 +303,7 @@
 (dmf assignment-operator
      ((and (? symbol? op)
            (or '= '*= '/= '%= '+= '-= '<<= '>>= '&= '^=
-               (? (lambda (op) (= (symbol->string op) "|=")) op)))
+               (? (lambda (op) (eq? (symbol->string op) "|=")) op)))
       (symbol->string op)))
 
 (dmf expression
@@ -475,17 +480,17 @@
 (dmf direct-declarator
      ((? identifier? identifier)
       (format-identifier identifier))
-     (('array
+     (('$array
        (? direct-declarator? direct-declarator)
        (? assignment-expression? assignment-expression))
       (sf "~a[~a]"
           (format-direct-declarator direct-declarator)
           (format-assignment-expression assignment-expression)))
-     (('array
+     (('$array
        (? direct-declarator? direct-declarator))
       (sf "~a[]"
           (format-direct-declarator direct-declarator)))
-     (('function
+     (('$function
        (? direct-declarator? direct-declarator)
        ((? parameter-declaration? parameter-declarations) ..1))
       (sf "~a(~a)"
@@ -493,7 +498,7 @@
           (string-join (map format-parameter-declaration
                             parameter-declarations)
                        ", ")))
-     (('function
+     (('$function
        (? direct-declarator? direct-declarator)
        ((? identifier? identifier-list) ...))
       (sf "~a(~a)"
@@ -552,23 +557,23 @@
           (format-direct-abstract-declarator direct-abstract-declarator))))
 
 (dmf direct-abstract-declarator
-     (('array
+     (('$array
        (? direct-abstract-declarator? direct-abstract-declarator)
        (? assignment-expression? assignment-expression))
       (sf "~a[~a]"
           (format-direct-abstract-declarator direct-abstract-declarator)
           (format-assignment-expression assignment-expression)))
-     (('array
+     (('$array
        (? direct-abstract-declarator? direct-abstract-declarator))
       (sf "~a[]"
           (format-direct-abstract-declarator direct-abstract-declarator)))
-     (('array
+     (('$array
        (? assignment-expression? assignment-expression))
       (sf "[~a]"
           (format-assignment-expression assignment-expression)))
-     (('array)
+     (('$array)
       "[]")
-     (('function
+     (('$function
        (? direct-abstract-declarator? direct-abstract-declarator)
        ((? parameter-declaration? parameter-declarations) ...))
       (sf "~a(~a)"
@@ -576,17 +581,17 @@
           (string-join (map format-parameter-declaration
                             parameter-declarations)
                        ", ")))
-     (('function
+     (('$function
        (? direct-abstract-declarator? direct-abstract-declarator))
       (sf "~a()"
           (format-direct-abstract-declarator direct-abstract-declarator)))
-     (('function
+     (('$function
        ((? parameter-declaration? parameter-declarations) ..1))
       (sf "(~a)"
           (string-join (map format-parameter-declaration
                             parameter-declarations)
                        ", ")))
-     (('function)
+     (('$function)
       "()"))
 
 (dmf typedef-name
@@ -621,7 +626,7 @@
       (format-jump-statement jump-statement)))
 
 (dmf labeled-statement
-     (('label
+     ((':
        (? identifier? identifier)
        (? statement? statement))
       (sf "~a:\n~a"
@@ -634,12 +639,12 @@
           (format-constant-expression constant-expression)
           (format-statement statement)))
      (('default
-       (? statement statement))
+       (? statement? statement))
       (sf "default: ~a"
           (format-statement statement))))
 
 (dmf compound-statement
-     (('block
+     (('$block
        (? block-item? block-items) ...)
       (sf "{\n~a}\n"
           (indent (apply string-append
@@ -741,23 +746,23 @@
       (sf "<~a>" header-name)))
 
 (dmf pp-directive
-     (('pp-include
+     (('$pp-include
        (? header-name? header-name))
       (sf "#include ~a\n"
           (format-header-name header-name)))
-     (((and op (or 'pp-if 'pp-elif))
+     (((and op (or '$pp-if '$pp-elif))
        (? constant-expression? constant-expression))
       (sf "#~a ~a\n"
           (symbol->string op)
           (format-constant-expression constant-expression)))
-     (((and op (or 'pp-ifdef 'pp-ifndef))
+     (((and op (or '$pp-ifdef '$pp-ifndef))
        (? identifier? identifier))
       (sf "#~a ~a\n"
           (symbol->string op)
           (format-identifier identifier)))
-     (('pp-else)
+     (('$pp-else)
       "#else\n")
-     (('pp-endif)
+     (('$pp-endif)
       "#endif\n"))
 
 (dmf external-declaration
