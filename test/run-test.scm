@@ -1,5 +1,4 @@
-(use-modules (srfi srfi-64)
-             (ice-9 rdelim)
+(use-modules (ice-9 rdelim)
              (ice-9 format))
 
 (use-modules (xc))
