@@ -121,8 +121,8 @@
           (string-join (map format-assignment-expression
                             assignment-expressions)
                        ", ")))
-     (('. (? postfix-expression? struct)
-          (? identifier? element))
+     (('$at (? postfix-expression? struct)
+            (? identifier? element))
       (sf "~a.~a"
           (format-postfix-expression struct)
           (format-identifier element)))
@@ -380,16 +380,16 @@
 (dmf struct-or-union-specifier
      (((? struct-or-union? struct-or-union)
        (? identifier? identifier)
-       (? struct-declaration? struct-declaration-list) ...)
-      (sf "~a ~a {\n~a}\n"
+       ((? struct-declaration? struct-declaration-list) ...))
+      (sf "~a ~a {\n~a}"
           (format-struct-or-union struct-or-union)
           (format-identifier identifier)
           (indent (apply string-append
                          (map format-struct-declaration
                               struct-declaration-list)))))
      (((? struct-or-union? struct-or-union)
-       (? struct-declaration? struct-declaration-list) ...)
-      (sf "~a {\n~a}\n"
+       ((? struct-declaration? struct-declaration-list) ...))
+      (sf "~a {\n~a}"
           (format-struct-or-union struct-or-union)
           (indent (apply string-append
                          (map format-struct-declaration

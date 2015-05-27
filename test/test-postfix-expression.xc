@@ -2,7 +2,13 @@
                       (char ((* *) argv))))
      ($block
       (int ($array n 10))
+      ((struct ((int a) (char (* s)) (float f) (double d))) rec)
+      ((struct ((int a) (char (* s)) (float f) (double d))) (* prec))
       (= (@ n 0) 8)
+      (= ($at rec s) "hello\n")
+      (= (-> prec s) "world\n")
+      (($at rec a) ++)
+      (($at rec a) --)
       ($call printf "hello\n")
       ($call printf "n[0]=%d\n" (@ n 0))
       ($call abort)))
