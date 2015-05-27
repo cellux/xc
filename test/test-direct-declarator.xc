@@ -1,0 +1,6 @@
+(int a)
+(int ($array n 10))
+(int ($array n))
+(int ($function substring (((const char) (* s))
+                           (int start)
+                           (int end))))
