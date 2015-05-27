@@ -5,5 +5,5 @@ int main(int argc, char **argv) {
   int j = ++i;
   int k = --j;
   int int_size = sizeof(int);
-  int n0_size = sizeof n[0];
+  int n0_size = sizeof(n[0]);
 }

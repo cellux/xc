@@ -158,10 +158,8 @@
       (sf "~a~a"
           (symbol->string op)
           (format-unary-expression unary-expression)))
-     (('$sizeof:type (? type-name? type-name))
-      (sf "sizeof(~a)" (format-type-name type-name)))
-     (('$sizeof:expr (? unary-expression? unary-expression))
-      (sf "sizeof ~a" (format-unary-expression unary-expression))))
+     (('sizeof (? expression? expression))
+      (sf "sizeof(~a)" (format-expression expression))))
 
 (dmf cast-expression
      ((? unary-expression? e)

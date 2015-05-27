@@ -6,5 +6,5 @@
       (int (i (! (~ (- (+ (* p)))))))
       (int (j (++ i)))
       (int (k (-- j)))
-      (int (int_size ($sizeof:type int)))
-      (int (n0_size ($sizeof:expr (@ n 0))))))
+      (int (int_size (sizeof int)))
+      (int (n0_size (sizeof (@ n 0))))))
