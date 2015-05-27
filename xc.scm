@@ -247,8 +247,11 @@
 ;;; A.2.2 Declarations
 
 (dmf declaration
+     (((? declaration-specifiers? decl-specs))
+      (sf "~a;\n"
+          (format-declaration-specifiers decl-specs)))
      (((? declaration-specifiers? decl-specs)
-       (? init-declarator? init-declarators) ...)
+       (? init-declarator? init-declarators) ..1)
       (sf "~a ~a;\n"
           (format-declaration-specifiers decl-specs)
           (string-join (map format-init-declarator
@@ -281,7 +284,11 @@
           (format-initializer initializer))))
 
 (dmf storage-class-specifier
-     ((and spec (or 'typedef 'extern 'static 'auto 'register))
+     ((and spec (or 'typedef
+                    'extern
+                    'static
+                    'auto
+                    'register))
       (symbol->string spec)))
 
 (dmf type-specifier
@@ -389,7 +396,9 @@
           (format-constant-expression constant-expression))))
 
 (dmf type-qualifier
-     ((and type-qualifier (or 'const 'restrict 'volatile))
+     ((and type-qualifier (or 'const
+                              'restrict
+                              'volatile))
       (symbol->string type-qualifier)))
 
 (dmf function-specifier
@@ -681,12 +690,12 @@
      (((and op (or '$pp-if '$pp-elif))
        (? constant-expression? constant-expression))
       (sf "#~a ~a\n"
-          (symbol->string op)
+          (substring (symbol->string op) 4)
           (format-constant-expression constant-expression)))
      (((and op (or '$pp-ifdef '$pp-ifndef))
        (? identifier? identifier))
       (sf "#~a ~a\n"
-          (symbol->string op)
+          (substring (symbol->string op) 4)
           (format-identifier identifier)))
      (('$pp-else)
       "#else\n")
