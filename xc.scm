@@ -137,6 +137,14 @@
           (format-postfix-expression postfix-expression)
           (symbol->string op))))
 
+(define unary-operators '(& * + - ~ !))
+
+(define (unary-operator? x)
+  (memq x unary-operators))
+
+(define (format-unary-operator op)
+  (symbol->string op))
+
 (dmf unary-expression
      ((? postfix-expression? e)
       (format-postfix-expression e))
@@ -154,14 +162,6 @@
       (sf "sizeof(~a)" (format-type-name type-name)))
      (('$sizeof:expr (? unary-expression? unary-expression))
       (sf "sizeof ~a" (format-unary-expression unary-expression))))
-
-(define unary-operators '(& * + - ~ !))
-
-(define (unary-operator? x)
-  (memq x unary-operators))
-
-(define (format-unary-operator op)
-  (symbol->string op))
 
 (dmf cast-expression
      ((? unary-expression? e)
