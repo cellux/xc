@@ -149,10 +149,10 @@
      ((? postfix-expression? e)
       (format-postfix-expression e))
      (((? unary-operator? op)
-       (? cast-expression? cast-expression))
+       (? expression? expression))
       (sf "~a~a"
           (format-unary-operator op)
-          (format-cast-expression cast-expression)))
+          (format-expression expression)))
      (((and op (or '++ '--))
        (? unary-expression? unary-expression))
       (sf "~a~a"
@@ -165,128 +165,46 @@
      ((? unary-expression? e)
       (format-unary-expression e))
      (('$cast (? type-name? type-name)
-              (? cast-expression? cast-expression))
+              (? expression? expression))
       (sf "(~a) ~a"
           (format-type-name type-name)
-          (format-cast-expression cast-expression))))
+          (format-expression expression))))
 
-(dmf multiplicative-expression
+;;; The whole cast of binary expressions (multiplicative, additive,
+;;; relational, etc.) have been simplified to a single case.
+;;;
+;;; On the XC side, S-expressions allow us to be explicit about
+;;; precendence. Generated binary expressions are always placed within
+;;; parentheses so the order of operations will be preserved.
+
+(dmf binary-expression
      ((? cast-expression? e)
       (format-cast-expression e))
-     (((and op (or '* '/ '%))
-       (? multiplicative-expression? left)
-       (? cast-expression? right))
-      (sf "(~a~a~a)"
-          (format-multiplicative-expression left)
-          (symbol->string op)
-          (format-cast-expression right))))
-
-(dmf additive-expression
-     ((? multiplicative-expression? e)
-      (format-multiplicative-expression e))
-     (((and op (or '+ '-))
-       (? additive-expression? left)
-       (? multiplicative-expression? right))
-      (sf "(~a~a~a)"
-          (format-additive-expression left)
-          (symbol->string op)
-          (format-multiplicative-expression right))))
-
-(dmf shift-expression
-     ((? additive-expression? e)
-      (format-additive-expression e))
-     (((and op (or '<< '>>))
-       (? shift-expression? left)
-       (? additive-expression? right))
-      (sf "(~a~a~a)"
-          (format-shift-expression left)
-          (symbol->string op)
-          (format-additive-expression right))))
-
-(dmf relational-expression
-     ((? shift-expression? e)
-      (format-shift-expression e))
-     (((and op (or '< '> '<= '>=))
-       (? relational-expression? left)
-       (? shift-expression? right))
-      (sf "(~a~a~a)"
-          (format-relational-expression left)
-          (symbol->string op)
-          (format-shift-expression right))))
-
-(dmf equality-expression
-     ((? relational-expression? e)
-      (format-relational-expression e))
-     (((and op (or '== '!=))
-       (? equality-expression? left)
-       (? relational-expression? right))
-      (sf "(~a~a~a)"
-          (format-equality-expression left)
-          (symbol->string op)
-          (format-relational-expression right))))
-
-(dmf and-expression
-     ((? equality-expression? e)
-      (format-equality-expression e))
-     (('&
-       (? and-expression? left)
-       (? equality-expression? right))
-      (sf "(~a&~a)"
-          (format-and-expression left)
-          (format-equality-expression right))))
-
-(dmf exclusive-or-expression
-     ((? and-expression? e)
-      (format-and-expression e))
-     (('^
-       (? exclusive-or-expression? left)
-       (? and-expression? right))
-      (sf "(~a^~a)"
-          (format-exclusive-or-expression left)
-          (format-and-expression right))))
-
-(dmf inclusive-or-expression
-     ((? exclusive-or-expression? e)
-      (format-exclusive-or-expression e))
      (((and (? symbol? op)
-            (? (lambda (op) (eq? (symbol->string op) "|")) op))
-       (? inclusive-or-expression? left)
-       (? exclusive-or-expression? right))
-      (sf "(~a|~a)"
-          (format-inclusive-or-expression left)
-          (format-exclusive-or-expression right))))
-
-(dmf logical-and-expression
-     ((? inclusive-or-expression? e)
-      (format-inclusive-or-expression e))
-     (('&&
-       (? logical-and-expression? left)
-       (? inclusive-or-expression? right))
-      (sf "(~a && ~a)"
-          (format-logical-and-expression left)
-          (format-inclusive-or-expression right))))
-
-(dmf logical-or-expression
-     ((? logical-and-expression? e)
-      (format-logical-and-expression e))
-     (((and (? symbol? op)
-            (? (lambda (op) (eq? (symbol->string op) "||")) op))
-       (? logical-or-expression? left)
-       (? logical-and-expression? right))
-      (sf "(~a || ~a)"
-          (format-logical-or-expression left)
-          (format-logical-and-expression right))))
+            (or '* '/ '%
+                '+ '-
+                '<< '>>
+                '< '> '<= '>=
+                '== '!=
+                '& '^ (? (lambda (op) (eq? (symbol->string op) "|")))
+                '&& (? (lambda (op) (eq? (symbol->string op) "||")))))
+       (? expression? left)
+       (? expression? right))
+      (sf "(~a~a~a)"
+          (format-expression left)
+          (symbol->string op)
+          (format-expression right))))
 
 (dmf conditional-expression
-     ((? logical-or-expression? e)
-      (format-logical-or-expression e))
-     (('? (? logical-or-expression? condition)
+     ((? binary-expression? e)
+      (format-binary-expression e))
+     (('? (? expression? condition)
           (? expression? e1)
-          (? conditional-expression? e2))
+          (? expression? e2))
       (sf "(~a ? ~a : ~a)"
-          (format-logical-or-expression condition)
+          (format-expression condition)
           (format-expression e1)
-          (format-conditional-expression e2))))
+          (format-expression e2))))
 
 (dmf assignment-expression
      ((? conditional-expression? e)
