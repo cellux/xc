@@ -3,5 +3,5 @@ int main(int argc, char **argv) {
   n[0] = 8;
   printf("hello\n");
   printf("n[0]=%d\n", n[0]);
-  exit();
+  abort();
 }

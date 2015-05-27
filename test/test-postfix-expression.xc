@@ -5,4 +5,4 @@
       (= (@ n 0) 8)
       ($call printf "hello\n")
       ($call printf "n[0]=%d\n" (@ n 0))
-      ($call exit)))
+      ($call abort)))
