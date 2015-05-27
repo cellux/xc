@@ -366,7 +366,7 @@
       (format-declarator declarator))
      (((? declarator? declarator)
        (? constant-expression? constant-expression))
-      (sf "~a : ~a"
+      (sf "~a:~a"
           (format-declarator declarator)
           (format-constant-expression constant-expression))))
 
