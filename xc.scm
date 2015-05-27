@@ -227,17 +227,18 @@
       (format-conditional-expression e))
      (((? assignment-operator? op)
        (? unary-expression? lvalue)
-       (? assignment-expression? rvalue))
+       (? expression? rvalue))
       (sf "~a ~a ~a"
           (format-unary-expression lvalue)
           (format-assignment-operator op)
-          (format-assignment-expression rvalue))))
+          (format-expression rvalue))))
 
 (dmf expression
      ((? assignment-expression? e)
       (format-assignment-expression e))
      (('$seq (? assignment-expression? exprs) ..1)
-      (string-join (map format-assignment-expression exprs) ", ")))
+      (sf "(~a)"
+          (string-join (map format-assignment-expression exprs) ", "))))
 
 (dmf constant-expression
      ((? conditional-expression? e)
