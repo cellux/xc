@@ -180,14 +180,22 @@
 (dmf binary-expression
      ((? cast-expression? e)
       (format-cast-expression e))
+     (('$and (? expression? left) (? expression? right))
+      (sf "(~a && ~a)" (format-expression left) (format-expression right)))
+     (('$or (? expression? left) (? expression? right))
+      (sf "(~a || ~a)" (format-expression left) (format-expression right)))
+     (('$bit-and (? expression? left) (? expression? right))
+      (sf "(~a&~a)" (format-expression left) (format-expression right)))
+     (('$bit-or (? expression? left) (? expression? right))
+      (sf "(~a|~a)" (format-expression left) (format-expression right)))
+     (('$bit-xor (? expression? left) (? expression? right))
+      (sf "(~a^~a)" (format-expression left) (format-expression right)))
      (((and (? symbol? op)
             (or '* '/ '%
                 '+ '-
                 '<< '>>
                 '< '> '<= '>=
-                '== '!=
-                '& '^ (? (lambda (op) (eq? (symbol->string op) "|")))
-                '&& (? (lambda (op) (eq? (symbol->string op) "||")))))
+                '== '!=))
        (? expression? left)
        (? expression? right))
       (sf "(~a~a~a)"
@@ -218,9 +226,11 @@
           (format-assignment-expression rvalue))))
 
 (dmf assignment-operator
+     ('$bit-and= "&=")
+     ('$bit-or= "|=")
+     ('$bit-xor= "^=")
      ((and (? symbol? op)
-           (or '= '*= '/= '%= '+= '-= '<<= '>>= '&= '^=
-               (? (lambda (op) (eq? (symbol->string op) "|=")) op)))
+           (or '= '*= '/= '%= '+= '-= '<<= '>>=))
       (symbol->string op)))
 
 (dmf expression

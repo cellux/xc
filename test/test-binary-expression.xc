@@ -4,4 +4,12 @@
       (int (a 5))
       (int (b (/ (* a 8) (% a 2))))
       (int (c (+ a (* b (- 3 a)))))
-      (int (d (+ (<< c 2) (>> c 3))))))
+      (int (d (+ (<< c 2) (>> c 3))))
+      (if ($and (>= a ($bit-and a #x0f))
+                (<= b ($bit-or b #x10)))
+          ($block
+           (int (e ($bit-xor a (- b c))))
+           (if ($or ($or (== a e)
+                         (!= b c))
+                    ($and (< c a) (> d c)))
+               ($call printf "hey!\n"))))))
