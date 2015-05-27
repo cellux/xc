@@ -226,7 +226,7 @@
 (dmf expression
      ((? assignment-expression? e)
       (format-assignment-expression e))
-     (((? assignment-expression? exprs) ..1)
+     (('$seq (? assignment-expression? exprs) ..1)
       (string-join (map format-assignment-expression exprs) ", ")))
 
 (dmf constant-expression
