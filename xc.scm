@@ -47,7 +47,8 @@
 ;;; A.1.5 Constants
 
 (dmf integer-constant
-     ((? exact-integer? i)
+     ((and (? integer? i)
+           (? exact? i))
       (number->string i)))
 
 (dmf floating-constant
