@@ -214,6 +214,14 @@
           (format-expression e1)
           (format-expression e2))))
 
+(dmf assignment-operator
+     ('$bit-and= "&=")
+     ('$bit-or= "|=")
+     ('$bit-xor= "^=")
+     ((and (? symbol? op)
+           (or '= '*= '/= '%= '+= '-= '<<= '>>=))
+      (symbol->string op)))
+
 (dmf assignment-expression
      ((? conditional-expression? e)
       (format-conditional-expression e))
@@ -224,14 +232,6 @@
           (format-unary-expression lvalue)
           (format-assignment-operator op)
           (format-assignment-expression rvalue))))
-
-(dmf assignment-operator
-     ('$bit-and= "&=")
-     ('$bit-or= "|=")
-     ('$bit-xor= "^=")
-     ((and (? symbol? op)
-           (or '= '*= '/= '%= '+= '-= '<<= '>>=))
-      (symbol->string op)))
 
 (dmf expression
      ((? assignment-expression? e)
