@@ -23,6 +23,24 @@ union {
   } nf;
 } u;
 int main(int argc, char **argv) {
-  (u.nf.type = 1);
-  (u.nf.doublenode = 3.14);
+  (((u.nf).type) = 1);
+  (((u.nf).doublenode) = 3.14);
+}
+void f(void) {
+  struct s {
+    int n;
+    double d[];
+  };
+  int m = 0;
+  struct s *p = malloc((sizeof(struct s)+sizeof(double [m])));
+  struct {
+    int n;
+    double d[m];
+  } *p;
+  struct s *s1, *s2;
+  (s1 = malloc((sizeof(struct s)+10)));
+  (s2 = malloc((sizeof(struct s)+6)));
+  double *dp;
+  (dp = (&((s1->d)[0])));
+  ((*dp) = 42);
 }

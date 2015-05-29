@@ -16,3 +16,17 @@
      ($block
       (= ($at ($at u nf) type) 1)
       (= ($at ($at u nf) doublenode) 3.14)))
+(void ($function f (void))
+      ($block
+       ((struct s ((int n) (double ($array d)))))
+       (int (m 0))
+       ((struct s) ((* p)
+                    ($call malloc (+ (sizeof (struct s))
+                                     (sizeof (double ($array m)))))))
+       ((struct ((int n) (double ($array d m)))) (* p))
+       ((struct s) (* s1) (* s2))
+       (= s1 ($call malloc (+ (sizeof (struct s)) 10)))
+       (= s2 ($call malloc (+ (sizeof (struct s)) 6)))
+       (double (* dp))
+       (= dp (& (@ (-> s1 d) 0)))
+       (= (* dp) 42)))

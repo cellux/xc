@@ -127,7 +127,7 @@
       (format-primary-expression e))
      (('@ (? expression? array)
           (? expression? index))
-      (sf "~a[~a]"
+      (sf "(~a[~a])"
           (format-expression array)
           (format-expression index)))
      (('$call (? expression? callable)
@@ -139,12 +139,12 @@
                        ", ")))
      (('$at (? expression? struct)
             (? identifier? element))
-      (sf "~a.~a"
+      (sf "(~a.~a)"
           (format-expression struct)
           (format-identifier element)))
      (('-> (? expression? pointer)
            (? identifier? element))
-      (sf "~a->~a"
+      (sf "(~a->~a)"
           (format-expression pointer)
           (format-identifier element)))
      (((? postfix-expression? postfix-expression)
@@ -181,7 +181,9 @@
           (symbol->string op)
           (format-unary-expression unary-expression)))
      (('sizeof (? expression? expression))
-      (sf "sizeof(~a)" (format-expression expression))))
+      (sf "sizeof(~a)" (format-expression expression)))
+     (('sizeof (? type-name? type-name))
+      (sf "sizeof(~a)" (format-type-name type-name))))
 
 (dmf cast-expression
      ((? unary-expression? e)

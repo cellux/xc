@@ -11,6 +11,6 @@ int main(int argc, char **argv) {
   int a[n][m];
   int (*p)[m] = a;
   (p += 1);
-  ((*p)[2] = 99);
+  (((*p)[2]) = 99);
   (n = (p-a));
 }

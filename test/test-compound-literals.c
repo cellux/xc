@@ -23,5 +23,5 @@ int f(void) {
   again:
   ((q = p), (p = (&((struct s) { (j++) }))));
   if ((j<2)) goto again;
-  return ((p==q) && (q->i==1));
+  return ((p==q) && ((q->i)==1));
 }
