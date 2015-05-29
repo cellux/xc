@@ -125,27 +125,27 @@
 (dmf postfix-expression
      ((? primary-expression? e)
       (format-primary-expression e))
-     (('@ (? postfix-expression? array)
+     (('@ (? expression? array)
           (? expression? index))
       (sf "~a[~a]"
-          (format-postfix-expression array)
+          (format-expression array)
           (format-expression index)))
-     (('$call (? postfix-expression? callable)
+     (('$call (? expression? callable)
               (? assignment-expression? assignment-expressions) ...)
       (sf "~a(~a)"
-          (format-postfix-expression callable)
+          (format-expression callable)
           (string-join (map format-assignment-expression
                             assignment-expressions)
                        ", ")))
-     (('$at (? postfix-expression? struct)
+     (('$at (? expression? struct)
             (? identifier? element))
       (sf "~a.~a"
-          (format-postfix-expression struct)
+          (format-expression struct)
           (format-identifier element)))
-     (('-> (? postfix-expression? pointer)
+     (('-> (? expression? pointer)
            (? identifier? element))
       (sf "~a->~a"
-          (format-postfix-expression pointer)
+          (format-expression pointer)
           (format-identifier element)))
      (((? postfix-expression? postfix-expression)
        (and op (or '++ '--)))

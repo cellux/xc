@@ -11,4 +11,7 @@
       (($at rec a) --)
       ($call printf "hello\n")
       ($call printf "n[0]=%d\n" (@ n 0))
-      ($call abort)))
+      ($call abort)
+      ($call (* (@ pf ($call f1)))
+             ($call f2)
+             (+ ($call f3) ($call f4)))))
