@@ -131,11 +131,11 @@
           (format-expression array)
           (format-expression index)))
      (('$call (? expression? callable)
-              (? assignment-expression? assignment-expressions) ...)
+              (? expression? expressions) ...)
       (sf "~a(~a)"
           (format-expression callable)
-          (string-join (map format-assignment-expression
-                            assignment-expressions)
+          (string-join (map format-expression
+                            expressions)
                        ", ")))
      (('$at (? expression? struct)
             (? identifier? element))
