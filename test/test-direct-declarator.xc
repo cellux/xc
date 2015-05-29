@@ -4,3 +4,4 @@
 (int ($function substring (((const char) (* s))
                            (int start)
                            (int end))))
+(int ($array ($array x 3) 5))
