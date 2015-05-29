@@ -20,5 +20,6 @@ int main(int argc, char **argv) {
   printf("hello\n");
   printf("n[0]=%d\n", n[0]);
   abort();
+  f().x;
   (*pf[f1()])(f2(), (f3()+f4()));
 }
