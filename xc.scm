@@ -635,10 +635,10 @@
                          (map format-block-item block-items))))))
 
 (dmf block-item
-     ((? declaration? declaration)
-      (format-declaration declaration))
      ((? statement? statement)
-      (format-statement statement)))
+      (format-statement statement))
+     ((? declaration? declaration)
+      (format-declaration declaration)))
 
 (dmf expression-statement
      ((? expression? expression)
