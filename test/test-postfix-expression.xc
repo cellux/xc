@@ -15,4 +15,5 @@
       ($at ($call f) x)
       ($call (* (@ pf ($call f1)))
              ($call f2)
-             (+ ($call f3) ($call f4)))))
+             (+ ($call f3) ($call f4)))
+      ($call assert (== (-> (& rec) s) ($at rec s)))))

@@ -22,4 +22,5 @@ int main(int argc, char **argv) {
   abort();
   f().x;
   (*pf[f1()])(f2(), (f3()+f4()));
+  assert(((&rec)->s==rec.s));
 }
