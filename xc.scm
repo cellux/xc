@@ -182,7 +182,7 @@
       (format-unary-expression e))
      (('$cast (? type-name? type-name)
               (? expression? expression))
-      (sf "(~a) ~a"
+      (sf "((~a) ~a)"
           (format-type-name type-name)
           (format-expression expression))))
 
