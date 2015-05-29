@@ -149,7 +149,7 @@
           (format-identifier element)))
      (((? postfix-expression? postfix-expression)
        (and op (or '++ '--)))
-      (sf "~a~a"
+      (sf "(~a~a)"
           (format-postfix-expression postfix-expression)
           (symbol->string op))))
 
