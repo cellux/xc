@@ -4,3 +4,10 @@
 (int (x #o-755))
 (int (x #xface))
 (int (x #x-face))
+
+(int (x ($int 1234)))
+((unsigned int) (x ($int 1234 U)))
+((long int) (x ($int 1234 L)))
+((unsigned long int) (x ($int 1234 U L)))
+((long long int) (x ($int 1234 L L)))
+((unsigned long long int) (x ($int 1234 U L L)))

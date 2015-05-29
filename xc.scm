@@ -49,7 +49,14 @@
 (dmf integer-constant
      ((and (? integer? i)
            (? exact? i))
-      (number->string i)))
+      (number->string i))
+     (('$int
+       (and (? integer? i)
+            (? exact? i))
+       . (and suffixes ((or 'U 'L) ...)))
+      (sf "~a~a"
+          (number->string i)
+          (apply string-append (map symbol->string suffixes)))))
 
 (dmf floating-constant
      ((? real? f)
