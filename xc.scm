@@ -151,7 +151,13 @@
        (and op (or '++ '--)))
       (sf "(~a~a)"
           (format-postfix-expression postfix-expression)
-          (symbol->string op))))
+          (symbol->string op)))
+     (('$compound
+       (? type-name? type-name)
+       (? initializer-list? initializer-list))
+      (sf "((~a) { ~a })"
+          (format-type-name type-name)
+          (format-initializer-list initializer-list))))
 
 (define unary-operators '(& * + - ~ !))
 
@@ -558,9 +564,34 @@
       (sf "{ ~a }"
           (format-initializer-list initializer-list))))
 
+(dmf designator
+     (('@
+       (? constant-expression? constant-expression))
+      (sf "[~a]"
+          (format-constant-expression constant-expression)))
+     (('$at
+       (? identifier? identifier))
+      (sf ".~a"
+          (format-identifier identifier))))
+
+(dmf designation
+     ((? designator? designator)
+      (format-designator designator))
+     (((? designator? designators) ..1)
+      (apply string-append (map format-designator designators))))
+
+(dmf initializer*
+     ((? initializer? initializer)
+      (format-initializer initializer))
+     (((? designation? designation)
+       (? initializer? initializer))
+      (sf "~a=~a"
+          (format-designation designation)
+          (format-initializer initializer))))
+
 (dmf initializer-list
-     (((? initializer? initializers) ..1)
-      (string-join (map format-initializer initializers) ", ")))
+     (((? initializer*? initializers) ..1)
+      (string-join (map format-initializer* initializers) ", ")))
 
 ;;; A.2.3 Statements
 
