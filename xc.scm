@@ -166,12 +166,12 @@
       (format-postfix-expression e))
      (((? unary-operator? op)
        (? expression? expression))
-      (sf "~a~a"
+      (sf "(~a~a)"
           (format-unary-operator op)
           (format-expression expression)))
      (((and op (or '++ '--))
        (? unary-expression? unary-expression))
-      (sf "~a~a"
+      (sf "(~a~a)"
           (symbol->string op)
           (format-unary-expression unary-expression)))
      (('sizeof (? expression? expression))
