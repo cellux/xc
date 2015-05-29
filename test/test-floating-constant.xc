@@ -10,3 +10,8 @@
 (double (d -1.255e2))
 (double (d .5))
 (double (d -.5))
+
+(float (f ($float .5)))
+(float (f ($float .5 F)))
+(double (d ($float .5)))
+(double (d ($float .5 L)))

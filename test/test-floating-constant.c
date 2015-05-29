@@ -10,3 +10,7 @@ double d = 125.5;
 double d = -125.5;
 double d = 0.5;
 double d = -0.5;
+float f = 0.5;
+float f = 0.5F;
+double d = 0.5;
+double d = 0.5L;

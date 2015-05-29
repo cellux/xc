@@ -60,7 +60,16 @@
 
 (dmf floating-constant
      ((? real? f)
-      (number->string f)))
+      (number->string f))
+     (('$float
+       (? real? f))
+      (number->string f))
+     (('$float
+       (? real? f)
+       (and suffix (or 'F 'L)))
+      (sf "~a~a"
+          (number->string f)
+          (symbol->string suffix))))
 
 (dmf enumeration-constant
      ((? identifier? x)
