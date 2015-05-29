@@ -23,6 +23,6 @@ union {
   } nf;
 } u;
 int main(int argc, char **argv) {
-  u.nf.type = 1;
-  u.nf.doublenode = 3.14;
+  (u.nf.type = 1);
+  (u.nf.doublenode = 3.14);
 }

@@ -250,7 +250,7 @@
      (((? assignment-operator? op)
        (? unary-expression? lvalue)
        (? expression? rvalue))
-      (sf "~a ~a ~a"
+      (sf "(~a ~a ~a)"
           (format-unary-expression lvalue)
           (format-assignment-operator op)
           (format-expression rvalue))))
@@ -428,17 +428,27 @@
       (symbol->string function-specifier)))
 
 (dmf declarator
-     ((? direct-declarator? direct-declarator)
-      (format-direct-declarator direct-declarator))
+     ;; order matters here
      (((? pointer? pointer)
        (? direct-declarator? direct-declarator))
       (sf "~a~a"
           (format-pointer pointer)
-          (format-direct-declarator direct-declarator))))
+          (format-direct-declarator direct-declarator)))
+     ((? direct-declarator? direct-declarator)
+      (format-direct-declarator direct-declarator)))
 
 (dmf direct-declarator
      ((? identifier? identifier)
       (format-identifier identifier))
+     ;; ( declarator )
+     ;;
+     ;; the pointer case from declarator is included here to avoid
+     ;; infinite ping-pong between declarator and direct-declarator
+     (((? pointer? pointer)
+       (? direct-declarator? direct-declarator))
+      (sf "(~a~a)"
+          (format-pointer pointer)
+          (format-direct-declarator direct-declarator)))
      (('$array
        (? direct-declarator? direct-declarator)
        (? assignment-expression? assignment-expression))

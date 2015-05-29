@@ -7,4 +7,10 @@ int main(int argc, char **argv) {
     int e = (a^(b-c));
     if ((((a==e) || (b!=c)) || ((c<a) && (d>c)))) printf("hey!\n");
   }
+  int n = 4, m = 3;
+  int a[n][m];
+  int (*p)[m] = a;
+  (p += 1);
+  ((*p)[2] = 99);
+  (n = (p-a));
 }

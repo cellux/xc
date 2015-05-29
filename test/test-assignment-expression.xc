@@ -13,3 +13,8 @@
       ($bit-and= a 15)
       ($bit-or= a 2)
       ($bit-xor= a 7)))
+
+(int ($function f (void))
+     ($block
+      (char c)
+      (if (== (= c ($call f)) -1) (return 0))))

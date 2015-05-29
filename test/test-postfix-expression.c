@@ -12,9 +12,9 @@ int main(int argc, char **argv) {
     float f;
     double d;
   } *prec;
-  n[0] = 8;
-  rec.s = "hello\n";
-  prec->s = "world\n";
+  (n[0] = 8);
+  (rec.s = "hello\n");
+  (prec->s = "world\n");
   (rec.a++);
   (rec.a--);
   printf("hello\n");
