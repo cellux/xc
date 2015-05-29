@@ -15,4 +15,13 @@ int main(int argc, char **argv) {
 int f(void) {
   char c;
   if (((c = f())==-1)) return 0;
+  int i;
+  long l;
+  (l = (c = i));
+  const char **cpp;
+  char *p;
+  const char c = 'a';
+  (cpp = (&p));
+  ((*cpp) = (&c));
+  ((*p) = 0);
 }
