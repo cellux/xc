@@ -1,7 +1,7 @@
 (int ($function f (void))
      (* ($function fip ()))
-     ($function (* pfi) ()))
-(int ($function (* ($array apfi 3))
+     ($function ((* pfi)) ()))
+(int ($function ((* ($array apfi 3)))
                 ((int (* x))
                  (int (* y)))))
 (void ($function addscalar ((int n)
@@ -28,7 +28,7 @@
                   ($block
                    (+= (@ (@ a i) j) x)))))))
 (int ($function
-      (* ($function fpfi ((int ($function * (long))) int)))
+      ((* ($function fpfi ((int ($function (*) (long))) int))))
       (int $...)))
 (double ($function maximum ((int n)
                             (int m)
@@ -42,7 +42,7 @@
 (double ($function maximum ((int n)
                             (int m)
                             (double ($array ($array a) m)))))
-(void ($function f ((double ($array ((* restrict) a) 5)))))
+(void ($function f ((double ($array (((* restrict) a)) 5)))))
 (void ($function f ((double ($array ($array a restrict) 5)))))
 (void ($function f ((double ($array ($array a restrict 3) 5)))))
 (void ($function f ((double ($array ($array a restrict static 3) 5)))))

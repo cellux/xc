@@ -440,7 +440,6 @@
       (symbol->string function-specifier)))
 
 (dmf declarator
-     ;; order matters here
      (((? pointer? pointer)
        (? direct-declarator? direct-declarator))
       (sf "~a~a"
@@ -452,15 +451,9 @@
 (dmf direct-declarator
      ((? identifier? identifier)
       (format-identifier identifier))
-     ;; ( declarator )
-     ;;
-     ;; the pointer case from declarator is included here to avoid
-     ;; infinite ping-pong between declarator and direct-declarator
-     (((? pointer? pointer)
-       (? direct-declarator? direct-declarator))
-      (sf "(~a~a)"
-          (format-pointer pointer)
-          (format-direct-declarator direct-declarator)))
+     (((? declarator? declarator))
+      (sf "(~a)"
+          (format-declarator declarator)))
      (('$array
        (? direct-declarator? direct-declarator)
        (? type-qualifier-list? type-qualifier-list)
@@ -592,17 +585,31 @@
           (format-direct-abstract-declarator direct-abstract-declarator))))
 
 (dmf direct-abstract-declarator
-     ;; (abstract-declarator)
-     ;;
-     ;; including the pointer cases from the abstract-declarator rule
-     ;; to avoid infinite ping-pong
-     ((? pointer? pointer)
-      (sf "(~a)" (format-pointer pointer)))
-     (((? pointer? pointer)
+     (((? abstract-declarator? abstract-declarator))
+      (sf "(~a)"
+          (format-abstract-declarator abstract-declarator)))
+     ;; direct-abstract-declarator? [ type-qualifier-list?
+     ;;                               assignment-expression? ]
+     (('$array)
+      "[]")
+     (('$array
        (? direct-abstract-declarator? direct-abstract-declarator))
-      (sf "(~a~a)"
-          (format-pointer pointer)
+      (sf "~a[]"
           (format-direct-abstract-declarator direct-abstract-declarator)))
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       (? type-qualifier-list? type-qualifier-list))
+      (sf "~a[~a]"
+          (format-direct-abstract-declarator direct-abstract-declarator)
+          (format-type-qualifier-list type-qualifier-list)))
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "~a[~a ~a]"
+          (format-direct-abstract-declarator direct-abstract-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
      (('$array
        (? direct-abstract-declarator? direct-abstract-declarator)
        (? assignment-expression? assignment-expression))
@@ -610,15 +617,78 @@
           (format-direct-abstract-declarator direct-abstract-declarator)
           (format-assignment-expression assignment-expression)))
      (('$array
-       (? direct-abstract-declarator? direct-abstract-declarator))
-      (sf "~a[]"
-          (format-direct-abstract-declarator direct-abstract-declarator)))
+       (? type-qualifier-list? type-qualifier-list))
+      (sf "[~a]"
+          (format-type-qualifier-list type-qualifier-list)))
+     (('$array
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "[~a ~a]"
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
      (('$array
        (? assignment-expression? assignment-expression))
       (sf "[~a]"
           (format-assignment-expression assignment-expression)))
-     (('$array)
-      "[]")
+     ;; direct-abstract-declarator? [ "static"
+     ;;                               type-qualifier-list?
+     ;;                               assignment-expression ]
+     (('$array
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "[static ~a]"
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "~a[static ~a]"
+          (format-direct-abstract-declarator direct-abstract-declarator)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       'static
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "[static ~a ~a]"
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       'static
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "~a[static ~a ~a]"
+          (format-direct-abstract-declarator direct-abstract-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     ;; direct-abstract-declarator? [ type-qualifier-list
+     ;;                               "static"
+     ;;                               assignment-expression ]
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       (? type-qualifier-list? type-qualifier-list)
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "~a[~a static ~a]"
+          (format-direct-abstract-declarator direct-abstract-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? type-qualifier-list? type-qualifier-list)
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "[~a static ~a]"
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     ;; direct-abstract-declarator? [ "*" ]
+     (('$array
+       (? direct-abstract-declarator? direct-abstract-declarator)
+       '*)
+      (sf "~a[*]"
+          (format-direct-abstract-declarator direct-abstract-declarator)))
+     (('$array '*)
+      "[*]")
+     ;; direct-abstract-declarator? ( parameter-type-list? )
      (('$function
        (? direct-abstract-declarator? direct-abstract-declarator)
        ((? parameter-declaration? parameter-declarations) ...))

@@ -15,7 +15,7 @@
                ($call printf "hey!\n"))))
       (int (n 4) (m 3))
       (int ($array ($array a n) m))
-      (int (($array (* p) m) a))
+      (int (($array ((* p)) m) a))
       (+= p 1)
       (= (@ (* p) 2) 99)
       (= n (- p a))))
