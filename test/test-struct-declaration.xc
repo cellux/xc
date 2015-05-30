@@ -12,10 +12,12 @@
          ((struct ((int type) (int intnode))) ni)
          ((struct ((int type) (double doublenode))) nf)))
  u)
+
 (int ($function main ((int argc) (char ((* *) argv))))
      ($block
       (= ($at ($at u nf) type) 1)
       (= ($at ($at u nf) doublenode) 3.14)))
+
 (void ($function f (void))
       ($block
        ((struct s ((int n) (double ($array d)))))
@@ -30,3 +32,10 @@
        (double (* dp))
        (= dp (& (@ (-> s1 d) 0)))
        (= (* dp) 42)))
+
+(void ($function g ())
+      ($block
+       ((typedef (struct tnode)) TNODE)
+       ((struct tnode ((int count)
+                       (TNODE (* left) (* right)))))
+       (TNODE s (* sp))))

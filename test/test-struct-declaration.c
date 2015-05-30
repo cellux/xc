@@ -44,3 +44,11 @@ void f(void) {
   (dp = (&((s1->d)[0])));
   ((*dp) = 42);
 }
+void g() {
+  typedef struct tnode TNODE;
+  struct tnode {
+    int count;
+    TNODE *left, *right;
+  };
+  TNODE s, *sp;
+}
