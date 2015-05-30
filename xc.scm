@@ -270,17 +270,21 @@
 
 ;;; A.2.2 Declarations
 
-(dmf declaration
+(dmf declaration*
      (((? declaration-specifiers? decl-specs))
-      (sf "~a;\n"
+      (sf "~a;"
           (format-declaration-specifiers decl-specs)))
      (((? declaration-specifiers? decl-specs)
        (? init-declarator? init-declarators) ..1)
-      (sf "~a ~a;\n"
+      (sf "~a ~a;"
           (format-declaration-specifiers decl-specs)
           (string-join (map format-init-declarator
                             init-declarators)
                        ", "))))
+
+(dmf declaration
+     ((? declaration*? declaration*)
+      (sf "~a\n" (format-declaration* declaration*))))
 
 (dmf declaration-specifier
      ((? storage-class-specifier? spec)
@@ -425,6 +429,12 @@
                               'volatile))
       (symbol->string type-qualifier)))
 
+(dmf type-qualifier-list
+     ((? type-qualifier? type-qualifier)
+      (format-type-qualifier type-qualifier))
+     (((? type-qualifier? type-qualifiers) ..1)
+      (string-join (map format-type-qualifier type-qualifiers) " ")))
+
 (dmf function-specifier
      ((and function-specifier (or 'inline))
       (symbol->string function-specifier)))
@@ -453,6 +463,20 @@
           (format-direct-declarator direct-declarator)))
      (('$array
        (? direct-declarator? direct-declarator)
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "~a[~a ~a]"
+          (format-direct-declarator direct-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       (? type-qualifier-list? type-qualifier-list))
+      (sf "~a[~a]"
+          (format-direct-declarator direct-declarator)
+          (format-type-qualifier-list type-qualifier-list)))
+     (('$array
+       (? direct-declarator? direct-declarator)
        (? assignment-expression? assignment-expression))
       (sf "~a[~a]"
           (format-direct-declarator direct-declarator)
@@ -460,6 +484,43 @@
      (('$array
        (? direct-declarator? direct-declarator))
       (sf "~a[]"
+          (format-direct-declarator direct-declarator)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       'static
+       (? type-qualifier-list? type-qualifier-list)
+       (? assignment-expression? assignment-expression))
+      (sf "~a[static ~a ~a]"
+          (format-direct-declarator direct-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "~a[static ~a]"
+          (format-direct-declarator direct-declarator)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       (? type-qualifier-list? type-qualifier-list)
+       'static
+       (? assignment-expression? assignment-expression))
+      (sf "~a[~a static ~a]"
+          (format-direct-declarator direct-declarator)
+          (format-type-qualifier-list type-qualifier-list)
+          (format-assignment-expression assignment-expression)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       (? type-qualifier-list? type-qualifier-list)
+       '*)
+      (sf "~a[~a *]"
+          (format-direct-declarator direct-declarator)
+          (format-type-qualifier-list type-qualifier-list)))
+     (('$array
+       (? direct-declarator? direct-declarator)
+       '*)
+      (sf "~a[*]"
           (format-direct-declarator direct-declarator)))
      (('$function
        (? direct-declarator? direct-declarator)
@@ -494,6 +555,7 @@
       (apply string-append (map format-pointer-item pointer-items))))
 
 (dmf parameter-declaration
+     ('$... "...")
      (((? declaration-specifiers? decl-specs)
        (? declarator? declarator))
       (sf "~a ~a"
@@ -505,7 +567,9 @@
           (format-declaration-specifiers decl-specs)
           (string-join (map format-abstract-declarator
                             abstract-declarators)
-                       " "))))
+                       " ")))
+     ((? declaration-specifiers? decl-specs)
+      (format-declaration-specifiers decl-specs)))
 
 (dmf type-name
      ((? specifier-qualifier-list? specifier-qualifier-list)
@@ -528,6 +592,17 @@
           (format-direct-abstract-declarator direct-abstract-declarator))))
 
 (dmf direct-abstract-declarator
+     ;; (abstract-declarator)
+     ;;
+     ;; including the pointer cases from the abstract-declarator rule
+     ;; to avoid infinite ping-pong
+     ((? pointer? pointer)
+      (sf "(~a)" (format-pointer pointer)))
+     (((? pointer? pointer)
+       (? direct-abstract-declarator? direct-abstract-declarator))
+      (sf "(~a~a)"
+          (format-pointer pointer)
+          (format-direct-abstract-declarator direct-abstract-declarator)))
      (('$array
        (? direct-abstract-declarator? direct-abstract-declarator)
        (? assignment-expression? assignment-expression))
@@ -696,18 +771,18 @@
        (? expression? e2)
        (? expression? e3)
        (? statement? statement))
-      (sf "for(~a; ~a; ~a) ~a"
+      (sf "for (~a; ~a; ~a) ~a"
           (format-expression e1)
           (format-expression e2)
           (format-expression e3)
           (format-statement statement)))
      (('for
-       (? declaration? decl)
+       (? declaration*? decl)
        (? expression? e2)
        (? expression? e3)
        (? statement? statement))
-      (sf "for(~a; ~a; ~a) ~a"
-          (format-declaration decl)
+      (sf "for (~a ~a; ~a) ~a"
+          (format-declaration* decl)
           (format-expression e2)
           (format-expression e3)
           (format-statement statement))))
