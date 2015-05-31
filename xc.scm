@@ -827,6 +827,12 @@
           (format-expression expression)
           (format-statement statement))))
 
+(dmf opt-expression
+     ((? expression? expression)
+      (format-expression expression))
+     ('()
+      ""))
+
 (dmf iteration-statement
      (('while
        (? expression? expression)
@@ -841,24 +847,24 @@
           (format-statement statement)
           (format-expression expression)))
      (('for
-       (? expression? e1)
-       (? expression? e2)
-       (? expression? e3)
+       (? opt-expression? e1)
+       (? opt-expression? e2)
+       (? opt-expression? e3)
        (? statement? statement))
       (sf "for (~a; ~a; ~a) ~a"
-          (format-expression e1)
-          (format-expression e2)
-          (format-expression e3)
+          (format-opt-expression e1)
+          (format-opt-expression e2)
+          (format-opt-expression e3)
           (format-statement statement)))
      (('for
        (? declaration*? decl)
-       (? expression? e2)
-       (? expression? e3)
+       (? opt-expression? e2)
+       (? opt-expression? e3)
        (? statement? statement))
       (sf "for (~a ~a; ~a) ~a"
           (format-declaration* decl)
-          (format-expression e2)
-          (format-expression e3)
+          (format-opt-expression e2)
+          (format-opt-expression e3)
           (format-statement statement))))
 
 (dmf jump-statement
