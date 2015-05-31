@@ -800,7 +800,10 @@
 
 (dmf expression-statement
      ((? expression? expression)
-      (sf "~a;\n" (format-expression expression))))
+      (sf "~a;\n" (format-expression expression)))
+     ;; () denotes the null statement
+     ('()
+      (sf ";\n")))
 
 (dmf selection-statement
      (('if
