@@ -777,13 +777,13 @@
      (('case
        (? constant-expression? constant-expression)
        (? statement? statement))
-      (sf "case ~a: ~a"
+      (sf "case ~a:\n~a"
           (format-constant-expression constant-expression)
-          (format-statement statement)))
+          (indent (format-statement statement))))
      (('default
        (? statement? statement))
-      (sf "default: ~a"
-          (format-statement statement))))
+      (sf "default:\n~a"
+          (indent (format-statement statement)))))
 
 (dmf compound-statement
      (('$block
