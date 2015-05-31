@@ -2,8 +2,8 @@ int *p = ((int []) { 2, 4 });
 void f(void) {
   int *p;
   (p = ((int [2]) { (*p) }));
-  drawline(((struct point) { .x=1, .y=1 }), ((struct point) { .x=3, .y=4 }));
-  drawline_p((&((struct point) { .x=1, .y=1 })), (&((struct point) { .x=3, .y=4 })));
+  drawline(((struct point) { .x = 1, .y = 1 }), ((struct point) { .x = 3, .y = 4 }));
+  drawline_p((&((struct point) { .x = 1, .y = 1 })), (&((struct point) { .x = 3, .y = 4 })));
   g(((const float []) { 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0 }));
   char *tmp = mktemp("/tmp/fileXXXXXX");
   (tmp = mktemp(((char []) { "/tmp/fileXXXXXX" })));

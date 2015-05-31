@@ -743,7 +743,7 @@
       (format-initializer initializer))
      (((? designation? designation)
        (? initializer? initializer))
-      (sf "~a=~a"
+      (sf "~a = ~a"
           (format-designation designation)
           (format-initializer initializer))))
 
